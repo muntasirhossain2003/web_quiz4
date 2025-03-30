@@ -1,13 +1,22 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const authRoutes = require('./routes/authRoutes');
+const taskRoutes = require('./routes/taskRoutes');
 
-dotenv.config(); // Load environment variables from .env file
+dotenv.config(); // Load environment variables
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5001;
 
-// MongoDB Connection
+app.use(express.json()); // Middleware to parse JSON
+
+// Test Route for root
+app.get('/', (req, res) => {
+  res.send('Server is running!');
+});
+
+// MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('MongoDB connected');
@@ -16,7 +25,10 @@ mongoose.connect(process.env.MONGO_URI)
     console.error('MongoDB connection error:', err);
   });
 
-// Your other routes and server setup can go here
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/tasks', taskRoutes);
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
